@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# === FİTAI ÖZEL GİZLİ DOSYALAR ===
+# Özel API anahtarları içeren ayar dosyası
+appsettings.json
+
+# SQLite Yerel Veritabanı Dosyaları
+*.db
+fitai.db

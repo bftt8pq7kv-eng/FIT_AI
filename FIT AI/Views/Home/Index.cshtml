@@ -1,0 +1,95 @@
+﻿@model FIT_AI.Models.UserPreference
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Kişisel Stil Asistanı</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <h2>Fit<span>AI</span></h2>
+            </div>
+
+            <form asp-action="Index" method="post">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-location-dot"></i> Hangi Şehirdesiniz?</label>
+                    <input type="text" name="City" placeholder="Örn: Istanbul" required />
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-palette"></i> Favori Renkleriniz</label>
+                    <input type="text" name="FavColors" placeholder="Örn: Siyah, Krem, Bej" />
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-shirt"></i> Giyim Tarzınız</label>
+                    <select name="ClothingStyle">
+                        <option value="Spor">Spor / Rahat</option>
+                        <option value="Klasik">Klasik / Resmi</option>
+                        <option value="Modern">Modern / Streetwear</option>
+                        <option value="Casual">Smart Casual</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-calendar-day"></i> Etkinlik Türü</label>
+                    <input type="text" name="EventType" placeholder="Örn: İş Görüşmesi, Akşam Yemeği" />
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-cloud-sun"></i> Kombin Havası (Vibe)</label>
+                    <input type="text" name="Vibe" placeholder="Örn: Enerjik, Minimalist, Şık" />
+                </div>
+
+                <button type="submit" class="btn-generate">Kombin Oluştur</button>
+            </form>
+        </div>
+
+        <div class="main-content">
+            @if (ViewBag.Result != null)
+            {
+                <div class="output-card animate-fade">
+                    <div class="weather-badge">
+                        <i class="fa-solid fa-cloud-sun-rain"></i> @ViewBag.Weather
+                    </div>
+                    <h3><i class="fa-solid fa-sparkles"></i> Yapay Zekâ Stil Öneriniz</h3>
+                    <div class="suggestion-text">
+                        @Html.Raw(ViewBag.Result.ToString().Replace("\n", "<br>"))
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="welcome-card">
+                    <i class="fa-solid fa-shirt" style="font-size: 48px; color: #deff9a; margin-bottom: 20px;"></i>
+                    <h3>Stilinizi Yapay Zekâya Emanet Edin</h3>
+                    <p>Soldaki formu doldurarak anlık hava durumuna ve modunuza en uygun kombin önerisini saniyeler içinde alın.</p>
+                </div>
+            }
+
+            <div class="history-section">
+                <h3><i class="fa-solid fa-history"></i> Son Kombin İstekleriniz (SQL Geçmişi)</h3>
+                <div class="history-grid">
+                    @if (ViewBag.History != null)
+                    {
+                        foreach (var item in ViewBag.History)
+                        {
+                            <div class="history-item">
+                                <strong>@item.City</strong> - @item.Style (@item.EventType)
+                                <span class="date">@item.CreatedAt.ToString("dd/MM HH:mm")</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

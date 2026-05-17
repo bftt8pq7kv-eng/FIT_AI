@@ -1,0 +1,32 @@
+﻿# FitAI - Yapay Zekâ Destekli Modern Stil Asistanı
+
+FitAI, kullanıcının bulunduğu konumdaki anlık hava durumunu analiz ederek kişisel tercihlerine (renk, tarz, etkinlik türü ve ruh hali) en uygun, kişiselleştirilmiş kıyafet kombinleri oluşturan modern bir web uygulamasıdır.
+
+## 🚀 Teknoloji Altyapısı
+* **Framework:** ASP.NET Core MVC (C#)
+* **Veritabanı:** SQLite & Entity Framework Core (Code-First)
+* **Tasarım:** Modern HTML5 & CSS3 (Dark Theme Esaslı)
+* **Harici Servisler:** OpenWeatherMap API (Canlı Hava Durumu Entegrasyonu)
+
+## 🤖 Kullanılan Yapay Zekâ Araçları
+* **Dil Modeli:** Google Gemini API (gemini-1.5-flash motoru) kullanılmıştır. Geliştirme aşamasında prompt mühendisliği tekniklerinden yararlanılarak, modelin bir moda uzmanı gibi nokta atışı ve maddeler halinde şık öneriler sunması sağlanmıştır.
+
+## 🛠️ Teknik Değerlendirme & Mimari (SOLID)
+Proje, teslim kriterlerinde yer alan yazılım prensiplerine tam uyumlu geliştirilmiştir:
+* **Single Responsibility (Tek Sorumluluk):** `WeatherService` yalnızca hava durumu verisinden, `AIService` yalnızca yapay zekâ üretiminden sorumludur. Sorumluluklar birbirine karıştırılmamıştır.
+* **Mimari Uyum:** Proje standart MVC (Model-View-Controller) desenine göre katmanlandırılmıştır.
+* **Kod Okunurluğu:** Temiz kod (Clean Code) standartlarına uygun, isimlendirme kurallarına bağlı ve asenkron (async/await) mimariyle yazılmıştır.
+* **Çalışır Olması:** Proje yerel sunucuda SQL veritabanı bağlantısı ve canlı API akışlarıyla eksiksiz çalışmaktadır.
+
+## ⚠️ Karşılaşılan Zorluklar & Çözümler
+* **Zorluk (Veritabanı Araçları Hatası):** Paket Yöneticisi Konsolu üzerinde `Update-Database` komutu çalıştırılırken `CommandNotFoundException` hatasıyla karşılaşılmıştır.
+* **Çözüm:** Projeye `Microsoft.EntityFrameworkCore.Tools` paketinin NuGet üzerinden entegre edilmesi sağlanmış, araçlar terminale tanıtılarak veritabanı (Migration) başarılı bir şekilde ayağa kaldırılmıştır.
+
+## 📈 Çıktı Kontrol Metodolojisi
+Sistemden dönen yapay zekâ çıktılarının doğruluğu ve anlamlılığı, kullanıcı girdileri değiştirilerek (Örn: Şehir değiştirildiğinde sıcaklığa göre mont/tişört dengesinin kontrolü) test edilmiştir. Boş veya hatalı API yanıtlarına karşı `try-catch` blokları ile hata yakalama mekanizmaları (Hata durumunda varsayılan kombin önerisi) kurulmuştur.
+
+## 📖 Kullanım Kılavuzu
+1. Uygulamayı çalıştırdığınızda sol panelde yer alan formu doldurun (Şehir, Renk Tercihi, Tarz, Etkinlik, Vibe).
+2. **"Kombin Oluştur"** butonuna basın.
+3. Sağ panelde anlık hava durumunu ve yapay zekânın sizin için hazırladığı özel kombin reçetesini inceleyin.
+4. Sayfanın en altında, yaptığınız aramaların **SQL Veritabanı** geçmişinden çekilerek listelendiğini görebilirsiniz.

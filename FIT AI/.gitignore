@@ -1,0 +1,6 @@
+﻿# Özel API anahtarları ve Ayarlar
+appsettings.json
+
+# SQLite Veritabanı Dosyası
+*.db
+fitai.db

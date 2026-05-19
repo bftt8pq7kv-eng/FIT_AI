@@ -1,95 +1,785 @@
-﻿@model FIT_AI.Models.UserPreference
+﻿@model IEnumerable<FIT_AI.Controllers.CalendarEvent>
+@{
+    Layout = null;
+}
 
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitAI - Kişisel Stil Asistanı</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>FitAI - Yapay Zeka Stil Danışmanı & Akıllı Ajanda</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+            :root {
+                --bg-color: #0d0d0d;
+                --panel-bg: #1a1a1a;
+                --text-main: #e0e0e0;
+                --text-muted: #a0a0a0;
+                --accent: #39ff14; /* Neon Yesil */
+                --accent-hover: #32e612;
+                --border-color: #333;
+                --error-color: #ff3333;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: var(--bg-color);
+                color: var(--text-main);
+                margin: 0;
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .sidebar {
+                width: 260px;
+                background-color: var(--panel-bg);
+                border-right: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+
+            .logo-area {
+                font-size: 24px;
+                font-weight: bold;
+                color: var(--accent);
+                text-align: center;
+                margin-bottom: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .nav-links {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+                .nav-links li {
+                    margin-bottom: 15px;
+                }
+
+                .nav-links a {
+                    text-decoration: none;
+                    color: var(--text-main);
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    padding: 12px;
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                }
+
+                    .nav-links a:hover, .nav-links a.active {
+                        background-color: rgba(57, 255, 20, 0.1);
+                        color: var(--accent);
+                    }
+
+                    .nav-links a.disabled {
+                        opacity: 0.3;
+                        cursor: not-allowed;
+                        pointer-events: none;
+                    }
+
+            .user-panel {
+                margin-top: auto;
+                border-top: 1px solid var(--border-color);
+                padding-top: 20px;
+                text-align: center;
+                color: var(--text-muted);
+                font-weight: 500;
+            }
+
+            .main-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            header {
+                background-color: var(--panel-bg);
+                border-bottom: 1px solid var(--border-color);
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .search-bar {
+                background-color: var(--bg-color);
+                border: 1px solid var(--border-color);
+                border-radius: 20px;
+                padding: 8px 15px;
+                width: 300px;
+                color: var(--text-main);
+            }
+
+            .content-body {
+                flex: 1;
+                display: grid;
+                grid-template-columns: 380px 1fr;
+                gap: 30px;
+                padding: 30px;
+                overflow: hidden;
+                height: calc(100vh - 80px);
+            }
+
+            .form-panel {
+                background-color: var(--panel-bg);
+                border-radius: 12px;
+                padding: 25px;
+                border: 1px solid var(--border-color);
+                overflow-y: auto;
+                transition: opacity 0.3s ease;
+            }
+
+                .form-panel.locked {
+                    opacity: 0.4;
+                    pointer-events: none;
+                }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--text-muted);
+                font-size: 14px;
+            }
+
+            input, select {
+                width: 100%;
+                background-color: var(--bg-color);
+                border: 1px solid var(--border-color);
+                color: var(--text-main);
+                padding: 12px;
+                border-radius: 6px;
+                box-sizing: border-box;
+            }
+
+            .btn-submit {
+                width: 100%;
+                background-color: var(--accent);
+                color: #000;
+                border: none;
+                padding: 15px;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+                .btn-submit:hover {
+                    background-color: var(--accent-hover);
+                }
+
+            .result-panel {
+                background-color: var(--panel-bg);
+                border-radius: 12px;
+                padding: 30px;
+                border: 1px solid var(--border-color);
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            .result-header {
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 15px;
+                margin-bottom: 10px;
+            }
+
+            .detailed-suggestion {
+                background-color: rgba(255, 255, 255, 0.03);
+                border-radius: 8px;
+                padding: 25px;
+                line-height: 1.9;
+                font-size: 16px;
+                color: var(--text-main);
+                white-space: pre-line;
+                border-left: 4px solid var(--accent);
+            }
+
+                .detailed-suggestion ul {
+                    padding-left: 20px;
+                }
+
+                .detailed-suggestion li {
+                    margin-bottom: 10px;
+                }
+
+            .history-card, .event-card {
+                background-color: rgba(255, 255, 255, 0.02);
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 18px;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+                .history-card:hover, .event-card:hover {
+                    border-color: var(--accent);
+                    background-color: rgba(57, 255, 20, 0.02);
+                    transform: translateX(5px);
+                }
+
+            .history-info h4, .event-info h4 {
+                margin: 0 0 5px 0;
+                color: var(--text-main);
+            }
+
+            .history-info p, .event-info p {
+                margin: 0;
+                color: var(--text-muted);
+                font-size: 13px;
+            }
+
+            .badge-count {
+                background-color: var(--accent);
+                color: #000;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 11px;
+                font-weight: bold;
+                margin-left: auto;
+            }
+
+            .profile-container {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                max-width: 500px;
+            }
+
+            .validation-alert {
+                background-color: rgba(57, 255, 20, 0.05);
+                border: 1px dashed var(--accent);
+                color: #daffde;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 14px;
+            }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <div class="sidebar">
-            <div class="brand">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <h2>Fit<span>AI</span></h2>
+
+    <div class="sidebar">
+        <div class="logo-area"><i class="fas fa-tshirt"></i> FitAI</div>
+        <ul class="nav-links">
+            <li><a id="nav-profil" class="active" onclick="switchTab('profil')"><i class="fas fa-user"></i> Profilim</a></li>
+            <li><a id="nav-kombin" class="disabled" onclick="switchTab('kombin')"><i class="fas fa-magic"></i> Kombin Oluştur</a></li>
+            <li><a id="nav-gecmis" class="disabled" onclick="switchTab('gecmis')"><i class="fas fa-history"></i> Geçmişim <span id="history-counter" style="color:var(--accent); font-size:12px;">(0)</span></a></li>
+            <li><a id="nav-etkinlik" class="disabled" onclick="switchTab('etkinlik')"><i class="fas fa-calendar-alt"></i> Etkinliklerim</a></li>
+        </ul>
+        <div class="user-panel" id="sidebar-user-label">Oturum Açılmadı</div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h2 id="page-title">👤 Profil Ayarları</h2>
+            <input type="text" class="search-bar" placeholder="Ara...">
+        </header>
+
+        <div class="content-body">
+            <div class="form-panel locked" id="left-form-panel">
+                <div class="validation-alert" id="form-unlocked-box" style="display:none; background-color: rgba(57,255,20,0.1);">
+                    <i class="fas fa-check-circle" style="color:var(--accent);"></i>
+                    <span>Profil doğrulandı! Tercihlerinizi girerek kombin oluşturabilirsiniz.</span>
+                </div>
+
+                <form id="mainOutfitForm" action="/Home/Index" method="post" onsubmit="return validateCityBeforeSubmit()">
+                    <input type="hidden" id="hidden_UserName" name="UserName" value="" />
+                    <input type="hidden" id="hidden_UserAge" name="UserAge" value="0" />
+
+                    <div class="form-group">
+                        <label>Kim Özelleştirilsin? (Profil)</label>
+                        <select id="form_Gender" name="Gender" required>
+                            <option value="Erkek">Erkek (Yetişkin)</option>
+                            <option value="Kadın">Kadın (Yetişkin)</option>
+                            <option value="Çocuk">Çocuk (Gelişim Çağı)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Şehir</label>
+                        <input type="text" id="form_City" name="City" placeholder="Örn: Denizli" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Favori Renkler</label>
+                        <input type="text" id="form_FavColors" name="FavColors" placeholder="Örn: Mavi, Beyaz" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giyim Tarzı</label>
+                        <select id="form_ClothingStyle" name="ClothingStyle">
+                            <option value="Casual / Spor">Casual / Spor</option>
+                            <option value="Bohem">Bohem</option>
+                            <option value="Minimalist">Minimalist</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Etkinlik Türü</label>
+                        <select id="form_EventType" name="EventType">
+                            <option value="Akşam Yemeği">Akşam Yemeği</option>
+                            <option value="İş Görüşmesi">İş Görüşmesi</option>
+                            <option value="Günlük">Günlük</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kombin Havası (Vibe)</label>
+                        <select id="form_Vibe" name="Vibe">
+                            <option value="Şık">Şık</option>
+                            <option value="Rahat">Rahat</option>
+                            <option value="Modern">Modern</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">KOMBİN OLUŞTUR</button>
+                </form>
             </div>
 
-            <form asp-action="Index" method="post">
-                <div class="form-group">
-                    <label><i class="fa-solid fa-location-dot"></i> Hangi Şehirdesiniz?</label>
-                    <input type="text" name="City" placeholder="Örn: Istanbul" required />
-                </div>
+            <div class="result-panel" id="dynamic-right-panel">
 
-                <div class="form-group">
-                    <label><i class="fa-solid fa-palette"></i> Favori Renkleriniz</label>
-                    <input type="text" name="FavColors" placeholder="Örn: Siyah, Krem, Bej" />
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fa-solid fa-shirt"></i> Giyim Tarzınız</label>
-                    <select name="ClothingStyle">
-                        <option value="Spor">Spor / Rahat</option>
-                        <option value="Klasik">Klasik / Resmi</option>
-                        <option value="Modern">Modern / Streetwear</option>
-                        <option value="Casual">Smart Casual</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fa-solid fa-calendar-day"></i> Etkinlik Türü</label>
-                    <input type="text" name="EventType" placeholder="Örn: İş Görüşmesi, Akşam Yemeği" />
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fa-solid fa-cloud-sun"></i> Kombin Havası (Vibe)</label>
-                    <input type="text" name="Vibe" placeholder="Örn: Enerjik, Minimalist, Şık" />
-                </div>
-
-                <button type="submit" class="btn-generate">Kombin Oluştur</button>
-            </form>
-        </div>
-
-        <div class="main-content">
-            @if (ViewBag.Result != null)
-            {
-                <div class="output-card animate-fade">
-                    <div class="weather-badge">
-                        <i class="fa-solid fa-cloud-sun-rain"></i> @ViewBag.Weather
+                <div id="view-profil">
+                    <div class="result-header">
+                        <h3>Kullanıcı Profil Girişi / Oturum Açma</h3>
+                        <p style="color: var(--text-muted); margin:0;">Yapılan kombin önerilerinin isme ve yaşa özel şekillenmesi için bu alanları doldurun.</p>
                     </div>
-                    <h3><i class="fa-solid fa-sparkles"></i> Yapay Zekâ Stil Öneriniz</h3>
-                    <div class="suggestion-text">
-                        @Html.Raw(ViewBag.Result.ToString().Replace("\n", "<br>"))
+
+                    <div class="profile-container">
+                        <div class="form-group">
+                            <label>Adınız ve Soyadınız <span style="color:var(--error-color);">*</span></label>
+                            <input type="text" id="prof_Name" placeholder="Örn: Mert Yılmaz" oninput="syncProfile()" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Yaşınız (Stil Filtresi) <span style="color:var(--error-color);">*</span></label>
+                            <input type="number" id="prof_Age" placeholder="Örn: 22" min="1" max="100" oninput="syncProfile()" autocomplete="off" />
+                        </div>
+
+                        <button type="button" class="btn-submit" id="btn-login" onclick="loginAndUnlock()" style="margin-top:10px;">PROFİLİ DOĞRULA VE DEVAM ET</button>
                     </div>
                 </div>
-            }
-            else
-            {
-                <div class="welcome-card">
-                    <i class="fa-solid fa-shirt" style="font-size: 48px; color: #deff9a; margin-bottom: 20px;"></i>
-                    <h3>Stilinizi Yapay Zekâya Emanet Edin</h3>
-                    <p>Soldaki formu doldurarak anlık hava durumuna ve modunuza en uygun kombin önerisini saniyeler içinde alın.</p>
-                </div>
-            }
 
-            <div class="history-section">
-                <h3><i class="fa-solid fa-history"></i> Son Kombin İstekleriniz (SQL Geçmişi)</h3>
-                <div class="history-grid">
-                    @if (ViewBag.History != null)
-                    {
-                        foreach (var item in ViewBag.History)
+                <div id="view-kombin" style="display: none;">
+                    <div class="result-header">
+                        <h3>Yapay Zekâ Stil Öneriniz</h3>
+                        @if (ViewBag.Weather != null)
                         {
-                            <div class="history-item">
-                                <strong>@item.City</strong> - @item.Style (@item.EventType)
-                                <span class="date">@item.CreatedAt.ToString("dd/MM HH:mm")</span>
-                            </div>
+                            <p style="color: var(--accent); margin: 0; font-size: 15px;"><i class="fas fa-cloud-sun"></i> @ViewBag.Weather</p>
                         }
+                    </div>
+
+                    @if (ViewBag.DetailedResult != null)
+                    {
+                        <div class="detailed-suggestion" id="current-ai-text">@Html.Raw(ViewBag.DetailedResult)</div>
+                    }
+                    else
+                    {
+                        <p style="color: var(--text-muted); text-align: center; margin-top: 150px; font-size: 16px;">
+                            <i class="fas fa-sparkles" style="color: var(--accent); display: block; font-size: 30px; margin-bottom: 15px;"></i>
+                            Profiliniz başarıyla onaylandı! Sol taraftaki arama kriterlerini doldurup 'KOMBİN OLUŞTUR' butonuna basabilirsiniz.
+                        </p>
                     }
                 </div>
+
+                <div id="view-gecmis" style="display: none;">
+                    <div class="result-header">
+                        <h3>Kombin Arama Geçmişi (Son 10 Sorgu)</h3>
+                        <p style="color: var(--text-muted); margin:0;">Yeniden açmak istediğiniz eski sorgunun üzerine tıklayın:</p>
+                    </div>
+                    <div id="history-list-target"></div>
+                </div>
+
+                <div id="view-etkinlik" style="display: none;">
+                    <div class="result-header">
+                        <h3>📅 Gelişmiş Takvim & Akıllı Ajanda Yönetimi</h3>
+                        <p style="color: var(--text-muted); margin:0;">İleri tarihli etkinliklerinizi girin, o gün geldiğinde ne giyeceğinizi yapay zekâ planlasın.</p>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <div class="form-group" style="grid-column: span 2; margin:0;">
+                            <label>Etkinlik Adı / Konusu</label>
+                            <input type="text" id="evt_Title" placeholder="Örn: Google Türkiye İş Görüşmesi" />
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Tarih ve Saat</label>
+                            <input type="datetime-local" id="evt_DateTime" />
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Şehir</label>
+                            <input type="text" id="evt_City" placeholder="Örn: İstanbul" />
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Giyim Tarzı</label>
+                            <select id="evt_Style">
+                                <option value="Casual / Spor">Casual / Spor</option>
+                                <option value="Bohem">Bohem</option>
+                                <option value="Minimalist">Minimalist</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Kombin Havası (Vibe)</label>
+                            <select id="evt_Vibe">
+                                <option value="Şık">Şık</option>
+                                <option value="Rahat">Rahat</option>
+                                <option value="Modern">Modern</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-submit" style="grid-column: span 2; padding:10px;" onclick="saveCalendarEvent()">ETKİNLİĞİ AJANDAYA EKLE</button>
+                    </div>
+
+                    <h4>Kayıtlı Planlarınız (Yapay Zekâ Analizi İçin Üzerine Tıklayın):</h4>
+                    <div id="event-list-target"></div>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <script>
+            var globalEventsList = [];
+
+            // 🟢 TÜRKİYE 81 İL DOĞRULAMA VERİ LİSTESİ
+            var turkiyeIlleri = [
+                "adana", "adiyaman", "afyonkarahisar", "afyon", "agri", "amasya", "ankara", "antalya", "artvin", "aydin", "balikesir",
+                "bilecik", "bingol", "bitlis", "bolu", "burdur", "bursa", "canakkale", "cankiri", "corum", "denizli", "diyarbakir",
+                "edirne", "elazig", "erzincan", "erzurum", "eskisehir", "gaziantep", "giresun", "gumushane", "hakkari", "hatay",
+                "isparta", "mersin", "istanbul", "izmir", "kars", "kastamonu", "kayseri", "kirklareli", "kirsehir", "kocaeli",
+                "konya", "kutahya", "malatya", "manisa", "kahramanmaras", "maras", "mardin", "mugla", "mus", "nevsehir", "nigde",
+                "ordu", "rize", "sakarya", "samsun", "siirt", "sinop", "sivas", "tekirdag", "tokat", "trabzon", "tunceli",
+                "sanliurfa", "urfa", "usak", "van", "yozgat", "zonguldak", "aksaray", "bayburt", "karaman", "kirikkale",
+                "batman", "sirnak", "bartin", "ardahan", "igdir", "yalova", "karabuk", "kilis", "osmaniye", "duzce"
+            ];
+
+            window.addEventListener('DOMContentLoaded', function() {
+                document.getElementById("prof_Name").value = "";
+                document.getElementById("prof_Age").value = "";
+
+                if(sessionStorage.getItem("fitAI_SessionName") && sessionStorage.getItem("fitAI_SessionAge")) {
+                    unlockSystem(sessionStorage.getItem("fitAI_SessionName"));
+                } else {
+                    switchTab('profil');
+                }
+
+                renderHistory();
+
+                @if (ViewBag.Events != null)
+                {
+                        foreach (var ev in ViewBag.Events)
+                        {
+                                <text>
+                                    globalEventsList.push({
+                                        title: "@ev.Title",
+                                        dateTime: "@ev.EventDateTime.ToString("yyyy-MM-ddTHH:mm")",
+                                        city: "@ev.City",
+                                        gender: "@ev.Gender",
+                                        style: "@ev.ClothingStyle",
+                                        vibe: "@ev.Vibe",
+                                        colors: "@ev.FavColors"
+                                    });
+                                </text>
+                        }
+                }
+                renderEvents();
+
+                @if (ViewBag.DetailedResult != null)
+                {
+                        <text>
+                            pushToHistory({
+                                city: "@ViewBag.Weather".split(" için")[0],
+                                gender: document.getElementById("form_Gender").value,
+                                style: document.getElementById("form_ClothingStyle").value,
+                                event: document.getElementById("form_EventType").value,
+                                vibe: document.getElementById("form_Vibe").value,
+                                colors: document.getElementById("form_FavColors").value,
+                                html: document.getElementById("current-ai-text").innerHTML
+                            });
+
+                            var savedName = sessionStorage.getItem("fitAI_SessionName") || "Kullanıcı";
+                            unlockSystem(savedName);
+                            switchTab('kombin');
+                        </text>
+                }
+            });
+
+            // 🛑 AKILLI ŞEHİR DOĞRULAMA FONKSİYONU (Form gönderilmeden önce çalışır)
+            function validateCityBeforeSubmit() {
+                var cityInput = document.getElementById("form_City").value;
+                if (!cityInput) return false;
+
+                // Girilen metni küçük harfe çevir ve Türkçe karakter toleransı uygula
+                var cleanedCity = cityInput.trim().toLowerCase()
+                                    .replace(/ı/g, 'i')
+                                    .replace(/ğ/g, 'g')
+                                    .replace(/ü/g, 'u')
+                                    .replace(/ş/g, 's')
+                                    .replace(/ö/g, 'o')
+                                    .replace(/ç/g, 'c');
+
+                // Eğer girilen şehir 81 il listesinde yoksa form gönderimini engelle ve uyar
+                if (!turkiyeIlleri.includes(cleanedCity)) {
+                    alert("❌ Lütfen şehri tekrar girin, yanlış girdiniz!");
+                    document.getElementById("form_City").focus();
+                    return false; // POST işlemine izin verme, sayfayı durdur
+                }
+
+                return true; // Şehir doğruysa POST işlemine izin ver
+            }
+
+            function saveCalendarEvent() {
+                var t = document.getElementById("evt_Title").value;
+                var dt = document.getElementById("evt_DateTime").value;
+                var c = document.getElementById("evt_City").value;
+                var s = document.getElementById("evt_Style").value;
+                var v = document.getElementById("evt_Vibe").value;
+
+                if(!t || !dt || !c) {
+                    alert("Lütfen Etkinlik Adı, Tarih ve Şehir alanlarını boş bırakmayın!");
+                    return;
+                }
+
+                // Ajandaya eklerken de şehir kontrolü yapalım ki veritabanı kirlenmesin
+                var cleanedCalCity = c.trim().toLowerCase().replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c');
+                if (!turkiyeIlleri.includes(cleanedCalCity)) {
+                    alert("❌ Lütfen ajanda için şehri tekrar girin, yanlış girdiniz!");
+                    return;
+                }
+
+                var payload = {
+                    Title: t,
+                    EventDateTime: dt,
+                    City: c,
+                    ClothingStyle: s,
+                    Vibe: v,
+                    Gender: document.getElementById("form_Gender").value,
+                    FavColors: document.getElementById("form_FavColors").value || "Siyah, Beyaz"
+                };
+
+                fetch('/Home/AddEvent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        alert("Etkinlik veritabanına başarıyla işlendi ve ajandanıza eklendi!");
+                        document.getElementById("evt_Title").value = "";
+                        document.getElementById("evt_DateTime").value = "";
+                        document.getElementById("evt_City").value = "";
+
+                        globalEventsList = data.events.map(e => ({
+                            title: e.title,
+                            dateTime: e.eventDateTime,
+                            city: e.city,
+                            gender: e.gender,
+                            style: e.clothingStyle,
+                            vibe: e.vibe,
+                            colors: e.favColors
+                        }));
+                        renderEvents();
+                    }
+                });
+            }
+
+            function renderEvents() {
+                var target = document.getElementById("event-list-target");
+                target.innerHTML = "";
+
+                if(globalEventsList.length === 0) {
+                    target.innerHTML = "<p style='color:var(--text-muted); padding-top:10px;'>Planlanmış ileri tarihli bir etkinliğiniz bulunmuyor.</p>";
+                    return;
+                }
+
+                globalEventsList.forEach(function(item, index) {
+                    var card = document.createElement("div");
+                    card.className = "event-card";
+                    card.onclick = function() { loadEventToForm(index); };
+
+                    var dateFormatted = new Date(item.dateTime).toLocaleString('tr-TR', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+                    card.innerHTML = "<i class='fas fa-bell' style='font-size:20px; color:var(--accent);'></i>" +
+                                     "<div class='event-info'>" +
+                                     "<h4>" + item.title + " (" + item.city + ")</h4>" +
+                                     "<p><i class='far fa-clock'></i> " + dateFormatted + " | Tarz: " + item.style + " [" + item.vibe + "]</p>" +
+                                     "</div>" +
+                                     "<span class='badge-count' style='background:#fff; color:#000;'>Hatırlatıcı</span>";
+                    target.appendChild(card);
+                });
+            }
+
+            function loadEventToForm(index) {
+                var item = globalEventsList[index];
+                if(!item) return;
+
+                document.getElementById("form_City").value = item.city;
+                document.getElementById("form_ClothingStyle").value = item.style;
+                document.getElementById("form_Vibe").value = item.vibe;
+                document.getElementById("form_EventType").value = item.title;
+                if(item.gender) document.getElementById("form_Gender").value = item.gender;
+                if(item.colors) document.getElementById("form_FavColors").value = item.colors;
+
+                var dateObj = new Date(item.dateTime);
+                var gunAdi = dateObj.toLocaleDateString('tr-TR', { weekday: 'long' });
+                var tamTarih = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+                var saat = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+                var mesajIcerigi = "🔔 Akıllı Ajanda Hatırlatması:\n\n" +
+                                   "Merhaba! Planladığın \"" + item.title + "\" etkinliğin yaklaşıyor.\n" +
+                                   "📅 Tarih: " + tamTarih + " " + gunAdi + " (Saat " + saat + ")\n" +
+                                   "📍 Konum: " + item.city + "\n\n" +
+                                   "Bu etkinlik için \"" + item.style + "\" bir tarz seçtin ve \"" + item.vibe + "\" bir hava yakalamak istedin. Tercih ettiğin renk paleti ise \"" + item.colors + "\".\n\n" +
+                                   "Şimdi sol taraftaki 'KOMBİN OLUŞTUR' butonuna basarak yapay zekânın senin için hazırlayacağı özel kombin önerisini görebilirsin!";
+
+                alert(mesajIcerigi);
+                switchTab('kombin');
+            }
+
+            function loginAndUnlock() {
+                var nameBox = document.getElementById("prof_Name").value;
+                var ageBox = document.getElementById("prof_Age").value;
+
+                if(!nameBox || nameBox.trim() === "" || !ageBox || parseInt(ageBox) <= 0) {
+                    alert("Lütfen geçerli bir Ad, Soyad ve Yaş bilgisi tanımlayın!");
+                    return;
+                }
+
+                sessionStorage.setItem("fitAI_SessionName", nameBox);
+                sessionStorage.setItem("fitAI_SessionAge", ageBox);
+
+                unlockSystem(nameBox);
+                switchTab('kombin');
+            }
+
+            function unlockSystem(username) {
+                document.getElementById("sidebar-user-label").innerText = username;
+                document.getElementById("nav-kombin").classList.remove("disabled");
+                document.getElementById("nav-gecmis").classList.remove("disabled");
+                document.getElementById("nav-etkinlik").classList.remove("disabled");
+                document.getElementById("left-form-panel").classList.remove("locked");
+                document.getElementById("form-unlocked-box").style.display = "flex";
+
+                document.getElementById("hidden_UserName").value = username;
+                document.getElementById("hidden_UserAge").value = sessionStorage.getItem("fitAI_SessionAge") || "0";
+            }
+
+            // Input anlık değişim kontrolü
+            function syncProfile() {
+                var nameVal = document.getElementById("prof_Name").value;
+                var ageVal = document.getElementById("prof_Age").value;
+
+                document.getElementById("hidden_UserName").value = nameVal;
+                document.getElementById("hidden_UserAge").value = ageVal ? ageVal : "0";
+            }
+
+            function switchTab(tabName) {
+                document.getElementById('view-kombin').style.display = 'none';
+                document.getElementById('view-gecmis').style.display = 'none';
+                document.getElementById('view-profil').style.display = 'none';
+                document.getElementById('view-etkinlik').style.display = 'none';
+                document.getElementById('nav-kombin').classList.remove('active');
+                document.getElementById('nav-gecmis').classList.remove('active');
+                document.getElementById('nav-profil').classList.remove('active');
+                document.getElementById('nav-etkinlik').classList.remove('active');
+
+                if (tabName === 'kombin') {
+                    document.getElementById('view-kombin').style.display = 'block';
+                    document.getElementById('nav-kombin').classList.add('active');
+                    document.getElementById('page-title').innerText = '✨ Stil Danışmanı';
+                } else if (tabName === 'gecmis') {
+                    renderHistory();
+                    document.getElementById('view-gecmis').style.display = 'block';
+                    document.getElementById('nav-gecmis').classList.add('active');
+                    document.getElementById('page-title').innerText = '⏳ Kombin Geçmişim';
+                } else if (tabName === 'profil') {
+                    document.getElementById('view-profil').style.display = 'block';
+                    document.getElementById('nav-profil').classList.add('active');
+                    document.getElementById('page-title').innerText = '👤 Profil Ayarları';
+                } else if (tabName === 'etkinlik') {
+                    renderEvents();
+                    document.getElementById('view-etkinlik').style.display = 'block';
+                    document.getElementById('nav-etkinlik').classList.add('active');
+                    document.getElementById('page-title').innerText = '📅 Akıllı Ajanda Yönetimi';
+                }
+            }
+
+            function getHistory() {
+                var history = localStorage.getItem("fitAI_HistoryArr");
+                return history ? JSON.parse(history) : [];
+            }
+
+            function pushToHistory(item) {
+                var list = getHistory();
+                if(list.length > 0 && list[0].html === item.html) return;
+
+                list.unshift(item);
+                if(list.length > 10) list.pop();
+                localStorage.setItem("fitAI_HistoryArr", JSON.stringify(list));
+                document.getElementById("history-counter").innerText = "(" + list.length + ")";
+            }
+
+            function renderHistory() {
+                var list = getHistory();
+                document.getElementById("history-counter").innerText = "(" + list.length + ")";
+                var target = document.getElementById("history-list-target");
+                target.innerHTML = "";
+
+                if(list.length === 0) {
+                    target.innerHTML = "<p style='color:var(--text-muted); text-align:center; padding-top:40px;'>Henüz kayıtlı geçmiş bulunmuyor.</p>";
+                    return;
+                }
+
+                list.forEach(function(item, index) {
+                    var card = document.createElement("div");
+                    card.className = "history-card";
+                    card.onclick = function() { loadHistoryItem(index); };
+
+                    card.innerHTML = "<i class='fas fa-history' style='font-size:20px; color:var(--accent);'></i>" +
+                                     "<div class='history-info'>" +
+                                     "<h4>" + item.city + " • " + item.style + " (" + item.gender + ")</h4>" +
+                                     "<p>" + item.colors + " | " + item.event + " [" + item.vibe + "]</p>" +
+                                     "</div>" +
+                                     "<span class='badge-count'>Sorgu #" + (list.length - index) + "</span>";
+                    target.appendChild(card);
+                });
+            }
+
+            function loadHistoryItem(index) {
+                var list = getHistory();
+                var item = list[index];
+                if(!item) return;
+
+                document.getElementById("form_City").value = item.city;
+                document.getElementById("form_Gender").value = item.gender;
+                document.getElementById("form_ClothingStyle").value = item.style;
+                document.getElementById("form_EventType").value = item.event;
+                document.getElementById("form_Vibe").value = item.vibe;
+                document.getElementById("form_FavColors").value = item.colors;
+
+                var viewKombinNode = document.getElementById("view-kombin");
+                viewKombinNode.innerHTML = "<div class='result-header'>" +
+                                           "<h3>Yapay Zekâ Stil Öneriniz (Geçmişten Yükleme)</h3>" +
+                                           "</div>" +
+                                           "<div class='detailed-suggestion'>" + item.html + "</div>";
+
+                switchTab('kombin');
+            }
+    </script>
+
 </body>
 </html>
